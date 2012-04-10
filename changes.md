@@ -1,5 +1,97 @@
 <!-- -*- mode: markdown ; mode: visual-line ; coding: utf-8 -*- -->
 
+# Changes to Clojure in Version 1.4
+
+## CONTENTS
+
+### Done through 1538d809
+
+
+### Needs more info
+
+* 3fde8b
+* b5f5ba & b4a221 - I think I understand, but need more context
+* 798a98 - does this ensure all ints are boxed as Integers when calling Java?
+* 535907
+* 8a0482
+
+## 1 Deprecated and Removed Features
+
+## 2 New and Improved Features
+
+### 2.1 assert-args Displays Namespace and Line Number on Errors
+
+`assert-args` now uses &form to report the namespace and line number where
+macro syntax errors occur.
+
+### 2.2 Java 7 Documentation
+
+`*core-java-api*` will now return the URL for the Java 7 Javadoc when you are
+running Java 7.
+
+### 2.3 loadLibrary Loads Library Using System ClassLoader
+
+A static method, `loadLibrary`, was added to `clojure.lang.RT` to load a 
+library using the system ClassLoader instead of Clojure's class loader.
+
+### 2.4 File and Line Number Added to Earmuff Dynamic Warning
+
+When a variable is defined using earmuffs but is not declared dynamic,
+Clojure emits a warning. That warning now includes the file and line
+number.
+
+### 2.5 clojure.core/mapv
+
+`mapv` takes a function `f` and one or more collections and returns a 
+vector consisting of the result of applying `f` to the set of first items of 
+each collection, followed by applying `f` to the set of second items in each 
+collection, until any one of the collections is exhausted. Any remaining 
+items in other collections are ignored. `f` should accept a number of arguments
+equal to the number of collections.
+
+    (= [1 2 3] (mapv + [1 2 3]))
+    ;=> true
+
+    (= [2 3 4] (mapv + [1 2 3] (repeat 1)))
+    ;=> true
+
+### 2.6 clojure.core/filterv
+
+`filterv` takes a predicate `pred` and a collection and returns a vector
+of the items in the collection for which `(pred item)` returns true. `pred`
+must be free of side-effects.
+
+    (= [] (filterv even? [1 3 5]))
+    ;=> true
+
+    (= [2 4] (filter even? [1 2 3 4 5]))
+    ;=> true
+
+### 2.7 clojure.core/contains?
+
+`contains?` now works with `java.util.Set`.
+
+### 2.8 clojure.core/min and clojure.core/max
+
+`min` and `max` now give preference to returning NaN if either of their
+arguments is NaN.
+
+### 2.9 clojure.java.io/as-file and clojure.java.io/as-url
+
+`as-file` and `as-url` now handle URL-escaping in both directions.
+
+## 3 Performance Enhancements
+
+* `(= char char)` is now optimized
+* `equiv` is inlined in variadic =
+
+### 4 Bug Fixes
+
+ * [CLJ-829](http://dev.clojure.org/jira/browse/CLJ-829)
+ * [CLJ-773](http://dev.clojure.org/jira/browse/CLJ-773)
+ * [CLJ-837](http://dev.clojure.org/jira/browse/CLJ-837)
+
+
 # Changes to Clojure in Version 1.3
 
 ## CONTENTS
