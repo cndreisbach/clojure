@@ -2,11 +2,6 @@
 
 # Changes to Clojure in Version 1.4
 
-## Needs more info
-
-* 798a98 - does this ensure all ints are boxed as Integers when calling Java? - ask Stu
-* 535907 - ask Stu
-
 ## CONTENTS
 
 <pre>
@@ -25,11 +20,12 @@
     2.11 assert-args Displays Namespace and Line Number on Errors
     2.12 File and Line Number Added to Earmuff Dynamic Warning
     2.13 require Can Take a :refer Option
-    2.14 \*compiler-options\* Var
+    2.14 *compiler-options* Var
     2.15 Improved Reporting of Invalid Characters in Unicode String Literals
     2.16 clojure.core/hash No Longer Relies on .hashCode
     2.17 Java 7 Documentation
     2.18 loadLibrary Loads Library Using System ClassLoader
+    2.19 Java int is boxed as java.lang.Integer
  3 Performance Enhancements
  4 Bug Fixes
  5 Modular Contrib
@@ -144,8 +140,14 @@ must be free of side-effects.
 `ex-info` creates an instance of `ExceptionInfo`. `ExceptionInfo` is a
 `RuntimeException` subclass that takes a string `msg` and a map of data.
 
+    (ex-info "Invalid use of robots" {:robots false})
+    ;=> #<ExceptionInfo clojure.lang.ExceptionInfo: Invalid use of robots {:robots false}>
+
 `ex-data` is called with an exception and will retrieve that map of data
 if the exception is an instance of `ExceptionInfo`.
+
+    (ex-data (ex-info "Invalid use of robots" {:robots false}))
+    ;=> {:robots false}
 
 ### 2.5 clojure.core/reduce-kv
 
@@ -156,6 +158,11 @@ the first key and the first value in `coll`, then applying `f` to that result
 and the 2nd key and value, etc. If `coll` contains no entries, returns `init`
 and f is not called. Note that `reduce-kv` is supported on vectors, 
 where the keys will be the ordinals.
+
+    (reduce-kv str "Hello " {:w \o :r \l :d \!})
+    ;=> "Hello :rl:d!:wo"
+    (reduce-kv str "Hello " [\w \o \r \l \d \!])
+    ;=> "Hello 0w1o2r3l4d5!"
 
 ### 2.6 clojure.core/contains? Improved
 
@@ -249,13 +256,19 @@ running Java 7.
 A static method, `loadLibrary`, was added to `clojure.lang.RT` to load a 
 library using the system ClassLoader instead of Clojure's class loader.
 
+### 2.19 Java int is Boxed As java.lang.Integer
+
+Java `int`s are now boxed as `java.lang.Integer`s. See
+[the discussion on clojure-dev](https://groups.google.com/forum/#!msg/clojure/7-hARL5c1lI/ntnnOweEGfUJ)
+for more information.
+
 ## 3 Performance Enhancements
 
 * `(= char char)` is now optimized
 * `equiv` is inlined in variadic =
 * `toString` cached on keywords and symbols
 
-### 4 Bug Fixes
+## 4 Bug Fixes
 
 * [CLJ-829](http://dev.clojure.org/jira/browse/CLJ-829)
   Transient hashmaps mishandle hash collisions
@@ -272,6 +285,8 @@ library using the system ClassLoader instead of Clojure's class loader.
   IllegalArgumentException thrown when defining a var whose value is calculated with a primitive fn.
 * [CLJ-855](http://dev.clojure.org/jira/browse/CLJ-855)
   catch receives a RuntimeException rather than the expected checked exception
+* [CLJ-876](http://dev.clojure.org/jira/browse/CLJ-876)
+  #^:dynamic vars declared in a nested form are not immediately dynamic
 * [CLJ-886](http://dev.clojure.org/jira/browse/CLJ-886)
   java.io/do-copy can garble multibyte characters
 * [CLJ-895](http://dev.clojure.org/jira/browse/CLJ-895)
